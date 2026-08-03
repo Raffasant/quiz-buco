@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Quiz BMF — Cirurgia e Traumatologia Bucomaxilofacial</title>
+<meta name="theme-color" content="#F8F6F1">
+<meta name="description" content="Quiz de estudo em cirurgia e traumatologia bucomaxilofacial e áreas afins.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Quiz BMF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F8F6F1;
+    --surface:#FFFFFF;
+    --surface-2:#F1EEE3;
+    --ink:#201C15;
+    --ink-muted:#7A7566;
+    --line:#E5DFCF;
+    --gold:#B8912E;
+    --gold-soft:#F4E8C6;
+    --gold-ink:#3A2E0C;
+    --maroon:#A8453E;
+    --maroon-soft:#F5E1DF;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+  }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    padding:20px 18px 40px;
+    display:flex;
+    flex-direction:column;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; font-weight:600; margin:0;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+  header.top{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:20px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  header.top .brand{display:flex; align-items:center; gap:10px;}
+  header.top .brand img{width:34px; height:34px; border-radius:9px; display:block;}
+  header.top .brand-text h1{font-size:18px; line-height:1.2;}
+  header.top .brand-text span{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-muted); letter-spacing:.04em;}
+  .pill{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--ink-muted);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:5px 10px;
+    white-space:nowrap;
+    background:var(--surface);
+  }
+
+  .screen{display:none; flex-direction:column; flex:1;}
+  .screen.active{display:flex;}
+
+  /* HOME */
+  .stats-strip{display:flex; gap:10px; margin-bottom:16px;}
+  .stat-box{
+    flex:1; background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:12px 13px;
+  }
+  .stat-box .n{font-family:'IBM Plex Mono',monospace; font-size:19px; color:var(--gold-ink); font-weight:600;}
+  .stat-box .l{font-size:10.5px; color:var(--ink-muted); margin-top:2px;}
+
+  .weak-card{
+    display:none;
+    background:var(--gold-soft);
+    border:1px solid var(--gold);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    margin-bottom:18px;
+  }
+  .weak-card.show{display:block;}
+  .weak-card .wl{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-ink); opacity:0.75;}
+  .weak-card .wt{font-family:'Fraunces',serif; font-weight:600; font-size:16px; margin-top:4px;}
+  .weak-card .wp{font-size:12.5px; color:var(--ink-muted); margin-top:3px;}
+
+  .review-banner{
+    display:none;
+    align-items:center; justify-content:space-between;
+    background:var(--surface); border:1px dashed var(--line); border-radius:12px;
+    padding:12px 14px; margin-bottom:18px; font-size:13px;
+  }
+  .review-banner.show{display:flex;}
+  .review-banner b{font-family:'Fraunces',serif; font-weight:600;}
+  .review-banner .btn{padding:8px 12px; font-size:12.5px;}
+
+  .cat-grid{display:flex; flex-direction:column; gap:9px; margin-bottom:20px;}
+  .cat-card{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:13px 15px;
+    cursor:pointer;
+    transition:border-color .15s, transform .1s;
+  }
+  .cat-card:active{transform:scale(0.98);}
+  .cat-card.selected{border-color:var(--gold); background:var(--gold-soft);}
+  .cat-card .cat-name{font-family:'Fraunces',serif; font-weight:600; font-size:15px;}
+  .cat-card .cat-count{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-muted); margin-top:2px;}
+  .cat-card .cat-right{display:flex; align-items:center; gap:10px;}
+  .cat-card .cat-acc{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--gold-ink); background:var(--gold-soft); border-radius:6px; padding:2px 7px;}
+  .cat-card .check{
+    width:20px; height:20px; border-radius:6px; border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    background:var(--surface);
+  }
+  .cat-card.selected .check{background:var(--gold); border-color:var(--gold);}
+  .cat-card.selected .check::after{content:"✓"; font-size:12px; color:#fff; font-weight:700;}
+
+  .btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:600;
+    font-size:14.5px;
+    border:none;
+    border-radius:10px;
+    padding:15px 18px;
+    cursor:pointer;
+    text-align:center;
+    transition:opacity .15s, transform .1s;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--gold); color:#fff;}
+  .btn-primary:disabled{opacity:0.35; pointer-events:none;}
+  .btn-ghost{background:var(--surface); color:var(--ink-muted); border:1px solid var(--line);}
+  .btn-row{display:flex; gap:10px; margin-top:auto; padding-top:10px;}
+
+  /* QUIZ */
+  .filmstrip{display:flex; gap:3px; margin-bottom:16px;}
+  .frame{flex:1; height:5px; border-radius:3px; background:var(--line);}
+  .frame.done{background:var(--gold);}
+  .frame.current{background:var(--ink-muted);}
+
+  .q-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .q-cat{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-ink);}
+  .q-index{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-muted);}
+
+  .q-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 17px;
+    margin-bottom:15px;
+  }
+  .q-card h2{font-size:17.5px; line-height:1.42; font-weight:600;}
+
+  .options{display:flex; flex-direction:column; gap:9px; margin-bottom:14px;}
+  .opt{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:13px 14px;
+    font-size:13.8px;
+    cursor:pointer;
+    display:flex; gap:10px; align-items:flex-start;
+    line-height:1.42;
+  }
+  .opt .letter{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-muted);
+    border:1px solid var(--line); border-radius:6px; width:22px; height:22px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    background:var(--surface-2);
+  }
+  .opt.correct{border-color:var(--gold); background:var(--gold-soft);}
+  .opt.correct .letter{background:var(--gold); border-color:var(--gold); color:#fff;}
+  .opt.wrong{border-color:var(--maroon); background:var(--maroon-soft);}
+  .opt.wrong .letter{background:var(--maroon); border-color:var(--maroon); color:#fff;}
+  .opt.disabled{pointer-events:none;}
+
+  .explain{
+    background:var(--surface-2);
+    border-left:3px solid var(--gold);
+    border-radius:0 10px 10px 0;
+    padding:12px 14px;
+    font-size:13px;
+    line-height:1.5;
+    color:var(--ink-muted);
+    margin-bottom:16px;
+    display:none;
+  }
+  .explain.show{display:block;}
+  .explain b{color:var(--ink);}
+
+  /* CHECKPOINT / SUMMARY */
+  .result-hero{text-align:center; padding:22px 10px 16px;}
+  .result-hero .score{font-family:'Fraunces',serif; font-size:48px; font-weight:700; color:var(--gold-ink); line-height:1;}
+  .result-hero .of{font-family:'IBM Plex Mono',monospace; color:var(--ink-muted); font-size:13px; margin-top:6px;}
+  .result-hero .msg{margin-top:10px; font-size:14px; color:var(--ink-muted);}
+
+  .review-item{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; margin-bottom:8px; font-size:13px;
+  }
+  .review-item.correct{border-left:3px solid var(--gold);}
+  .review-item.wrong{border-left:3px solid var(--maroon);}
+  .review-item .rq{font-weight:600; margin-bottom:4px;}
+  .review-item .ra{color:var(--ink-muted); font-size:12.5px;}
+
+  .breakdown{margin-top:6px; margin-bottom:16px;}
+  .bd-row{display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line);}
+  .bd-row:last-child{border-bottom:none;}
+  .bd-name{flex:1; font-size:13px;}
+  .bd-bar{flex:1.4; height:6px; background:var(--surface-2); border-radius:4px; overflow:hidden;}
+  .bd-fill{height:100%; background:var(--gold);}
+  .bd-pct{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-muted); width:34px; text-align:right;}
+
+  footer.credit{margin-top:22px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-muted); opacity:0.55;}
+
+  /* LOGIN */
+  #screen-login{justify-content:center; flex:1;}
+  .login-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:28px 22px; text-align:center;
+  }
+  .login-card img{width:56px; height:56px; border-radius:14px; margin-bottom:14px;}
+  .login-card h2{font-size:20px; margin-bottom:4px;}
+  .login-card .sub{font-size:12.5px; color:var(--ink-muted); margin-bottom:22px;}
+  .field{text-align:left; margin-bottom:12px;}
+  .field label{display:block; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-muted); margin-bottom:5px;}
+  .field input{
+    width:100%; padding:12px 13px; border:1px solid var(--line); border-radius:10px;
+    font-family:'IBM Plex Sans',sans-serif; font-size:14px; background:var(--surface-2); color:var(--ink);
+  }
+  .field input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .login-error{color:var(--maroon); font-size:12.5px; min-height:16px; margin:6px 0 4px; text-align:left;}
+  .btn-logout{background:none; border:none; color:var(--ink-muted); font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-decoration:underline; cursor:pointer; padding:0;}
+  .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
+  .user-email{font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--ink-muted); max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="top">
+    <div class="brand">
+      <img src="icon-192.png" alt="">
+      <div class="brand-text">
+        <h1>Quiz BMF</h1>
+        <span>CIRURGIA · TRAUMATOLOGIA · ÁREAS AFINS</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="pill" id="bank-count-pill">— questões</div>
+      <button class="btn-logout" id="btn-logout" style="display:none;">sair</button>
+    </div>
+  </header>
+
+  <!-- LOGIN -->
+  <section class="screen active" id="screen-login">
+    <div class="login-card">
+      <img src="icon-192.png" alt="">
+      <h2>Quiz BMF</h2>
+      <div class="sub">Acesso restrito · entre com o e-mail e senha cadastrados</div>
+      <form id="login-form">
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" id="login-email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="login-password" required autocomplete="current-password">
+        </div>
+        <div class="login-error" id="login-error"></div>
+        <button type="submit" class="btn btn-primary" id="btn-login" style="width:100%;">Entrar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- HOME -->
+  <section class="screen" id="screen-home">
+    <div class="stats-strip">
+      <div class="stat-box">
+        <div class="n" id="stat-answered">0</div>
+        <div class="l">respondidas (total)</div>
+      </div>
+      <div class="stat-box">
+        <div class="n" id="stat-accuracy">—</div>
+        <div class="l">acerto geral</div>
+      </div>
+    </div>
+
+    <div class="weak-card" id="weak-card">
+      <div class="wl">Ponto mais fraco agora</div>
+      <div class="wt" id="weak-title">—</div>
+      <div class="wp" id="weak-sub">—</div>
+    </div>
+
+    <div class="review-banner" id="review-banner">
+      <span><b id="review-count">0</b> questões para revisar</span>
+      <button class="btn btn-primary" id="btn-review">Revisar erros</button>
+    </div>
+
+    <div class="eyebrow" style="margin-bottom:10px;">Temas (bloco de 10 perguntas)</div>
+    <div class="cat-grid" id="cat-grid"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-start" style="width:100%;">Iniciar bloco de 10</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="screen-quiz">
+    <div class="filmstrip" id="filmstrip"></div>
+    <div class="q-meta">
+      <span class="q-cat" id="q-cat">—</span>
+      <span class="q-index" id="q-index">1/10</span>
+    </div>
+    <div class="q-card">
+      <h2 id="q-text">Pergunta</h2>
+    </div>
+    <div class="options" id="q-options"></div>
+    <div class="explain" id="q-explain"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="btn-quit">Sair</button>
+      <button class="btn btn-primary" id="btn-next" style="width:100%;" disabled>Responda para continuar</button>
+    </div>
+  </section>
+
+  <!-- CHECKPOINT (fim de cada bloco de 10) -->
+  <section class="screen" id="screen-checkpoint">
+    <div class="result-hero">
+      <div class="eyebrow">Bloco concluído</div>
+      <div class="score" id="cp-score">0/10</div>
+      <div class="of" id="cp-pct">0% de acerto</div>
+      <div class="msg" id="cp-msg"></div>
+    </div>
+    <div class="eyebrow" style="margin:10px 0;">Revisão deste bloco</div>
+    <div id="cp-review"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="btn-end-session">Encerrar sessão</button>
+      <button class="btn btn-primary" id="btn-next-block" style="width:100%;">Próximo bloco de 10</button>
+    </div>
+  </section>
+
+  <!-- RESUMO DA SESSÃO -->
+  <section class="screen" id="screen-summary">
+    <div class="result-hero">
+      <div class="eyebrow">Resumo da sessão</div>
+      <div class="score" id="sum-score">0/0</div>
+      <div class="of" id="sum-pct">0% de acerto · <span id="sum-blocks">0</span> bloco(s)</div>
+    </div>
+    <div class="eyebrow" style="margin:14px 0 8px;">Desempenho por área (histórico)</div>
+    <div class="breakdown" id="sum-breakdown"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-summary-home" style="width:100%;">Voltar ao início</button>
+    </div>
+  </section>
+
+  <footer class="credit">QUIZ BMF · BANCO DE ESTUDO PESSOAL</footer>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import {
+  getFirestore, enableIndexedDbPersistence, doc, getDoc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCI1vWuMcCABPI9LZj9BfJf8qiCpZnEj50",
+  authDomain: "quiz-buco.firebaseapp.com",
+  projectId: "quiz-buco",
+  storageBucket: "quiz-buco.firebasestorage.app",
+  messagingSenderId: "994717014938",
+  appId: "1:994717014938:web:3fddb3d8c7779967dab823"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+enableIndexedDbPersistence(db).catch(()=>{ /* ok se já houver outra aba aberta */ });
+
+let currentUser = null;
+/* =========================================================
+   BANCO DE QUESTÕES
+   ========================================================= */
+const CATEGORIES = [
+  {key:'trauma',    name:'Trauma Bucomaxilofacial'},
+  {key:'orto',      name:'Cirurgia Ortognática'},
+  {key:'dentoalv',  name:'Terceiros Molares e Dentoalveolar'},
+  {key:'patoatm',   name:'Patologia Oral e ATM'},
+  {key:'farmaco',   name:'Farmacologia Aplicada'},
+  {key:'anestesio', name:'Anestesiologia'},
+  {key:'anatomia',  name:'Anatomia Aplicada'},
+];
+
+const QUESTIONS = [
+// ---------- TRAUMA (20) ----------
+{c:'trauma', q:'Na classificação de Le Fort, qual tipo de fratura apresenta traço piramidal passando pelos ossos nasais, processo frontal da maxila, parede medial da órbita e sutura pterigomaxilar?', o:['Le Fort I','Le Fort II','Le Fort III','Fratura de Guerin'], a:1, e:'O Le Fort II tem formato piramidal, envolvendo a região nasomaxilar até a sutura pterigomaxilar, diferente do Le Fort I (traço horizontal baixo) e do Le Fort III (disjunção craniofacial completa).'},
+{c:'trauma', q:'A fratura de Le Fort III é também conhecida como:', o:['Fratura de Guerin','Disjunção craniofacial','Fratura tripóide','Fratura em degrau'], a:1, e:'Le Fort III separa completamente o esqueleto facial da base do crânio, por isso é chamada de disjunção craniofacial.'},
+{c:'trauma', q:'A presença de um "degrau" (step deformity) palpável na borda infraorbitária é sinal clínico sugestivo de fratura de:', o:['Complexo zigomático-orbitário','Le Fort I isolado','Côndilo mandibular','Sínfise mandibular'], a:0, e:'A descontinuidade óssea palpável na borda infraorbitária é um sinal clássico de fratura do complexo zigomático-orbitário (CZO).'},
+{c:'trauma', q:'Qual exame clínico é considerado padrão-ouro para diagnosticar encarceramento muscular em fratura de assoalho orbital?', o:['Teste de acuidade visual','Teste de ducção forçada','Teste de Schirmer','Reflexo pupilar direto'], a:1, e:'O teste de ducção forçada avalia mecanicamente se há restrição da movimentação ocular por encarceramento de tecido mole ou muscular na fratura do assoalho orbital.'},
+{c:'trauma', q:'A equimose periorbitária bilateral espontânea, sem trauma direto na região, é conhecida como:', o:['Sinal de Battle','Olhos de guaxinim','Sinal de Vincent','Sinal do halo'], a:1, e:'"Olhos de guaxinim" (raccoon eyes) sugere fratura de base de crânio anterior, com extravasamento sanguíneo para o tecido periorbital.'},
+{c:'trauma', q:'Equimose na região mastóidea (retroauricular) após trauma craniano é chamada de:', o:['Sinal de Battle','Sinal de Guerin','Sinal do bigode','Sinal de Le Fort'], a:0, e:'O sinal de Battle indica possível fratura de base de crânio na fossa média, e deve levar à investigação de fístula liquórica.'},
+{c:'trauma', q:'Diante de suspeita de rinorreia liquórica após trauma facial, qual teste simples pode ajudar na triagem inicial?', o:['Teste do halo em gaze','Teste de Rinne','Teste de Weber','Teste de Schirmer'], a:0, e:'O teste do halo consiste em pingar a secreção em gaze; se houver LCR misturado a sangue, forma-se um halo claro ao redor da mancha central mais escura, sugerindo fístula liquórica.'},
+{c:'trauma', q:'O tempo máximo recomendado para reimplante de um dente permanente avulsionado mantido em meio seco fora do alvéolo, antes de comprometer seriamente o prognóstico, é de aproximadamente:', o:['5 minutos','15 minutos','60 minutos','6 horas'], a:2, e:'Após cerca de 60 minutos em meio seco, o dano ao ligamento periodontal é extenso, reduzindo bastante o prognóstico de reimplante bem-sucedido.'},
+{c:'trauma', q:'Qual é o meio de armazenamento mais recomendado para transporte de um dente avulsionado até o atendimento odontológico?', o:['Água da torneira','Álcool','Leite ou solução salina balanceada','Papel toalha seco'], a:2, e:'Leite, soro fisiológico ou solução de Hank mantêm osmolaridade e pH favoráveis à viabilidade das células do ligamento periodontal, ao contrário da água comum ou do meio seco.'},
+{c:'trauma', q:'A diplopia binocular que surge logo após um trauma orbital sugere principalmente:', o:['Neurite óptica','Herniação de conteúdo orbital através do assoalho fraturado','Catarata traumática','Glaucoma agudo'], a:1, e:'O encarceramento de músculo extraocular (geralmente o reto inferior) ou tecido periorbital na linha de fratura do assoalho orbital restringe a movimentação ocular e causa diplopia.'},
+{c:'trauma', q:'O trismo que acompanha uma fratura isolada do arco zigomático geralmente decorre de:', o:['Espasmo do músculo pterigóideo lateral','Impedimento mecânico do movimento do processo coronoide','Lesão do nervo trigêmeo','Luxação da ATM contralateral'], a:1, e:'O deslocamento do arco zigomático fraturado pode bloquear mecanicamente o movimento do processo coronoide da mandíbula, limitando a abertura bucal.'},
+{c:'trauma', q:'Em crianças, fraturas de côndilo mandibular geralmente são tratadas preferencialmente por:', o:['Redução aberta com fixação rígida sempre','Tratamento conservador (fechado) com acompanhamento funcional','Condilectomia total','Enxerto costocondral imediato'], a:1, e:'Em pacientes pediátricos, o tratamento conservador é geralmente preferido devido ao alto potencial de remodelação condilar e ao risco de dano ao centro de crescimento com abordagem aberta.'},
+{c:'trauma', q:'Uma linha de fratura mandibular é classificada como "favorável" quando:', o:['A ação muscular tende a distrair os fragmentos','A ação muscular tende a manter os fragmentos aproximados','Está sempre localizada no côndilo','Não há deslocamento possível, independente da musculatura'], a:1, e:'Fraturas favoráveis são aquelas em que a tração muscular aproxima os fragmentos, facilitando a estabilidade, ao contrário das desfavoráveis, em que a musculatura tende a separá-los.'},
+{c:'trauma', q:'O princípio de fixação interna rígida em trauma mandibular, segundo os conceitos AO/ASIF, busca principalmente:', o:['Permitir mobilização funcional precoce com estabilidade nos focos de fratura','Substituir totalmente a necessidade de redução anatômica','Eliminar a necessidade de qualquer imobilização pós-operatória imediata','Evitar contato entre os fragmentos ósseos'], a:0, e:'A fixação rígida busca estabilidade suficiente para permitir função mandibular precoce, reduzindo o tempo de bloqueio maxilomandibular e favorecendo a reparação óssea.'},
+{c:'trauma', q:'A linha de fratura do Le Fort I também é conhecida classicamente como:', o:['Linha de Guerin','Linha de Ricketts','Linha de Downs','Linha de Angle'], a:0, e:'A fratura Le Fort I, de traço horizontal baixo acima dos ápices dentários, é historicamente denominada linha de Guerin.'},
+{c:'trauma', q:'O achado de má oclusão classe III aguda (mordida cruzada anterior) imediatamente após um trauma facial extenso sugere:', o:['Fratura isolada de côndilo unilateral não deslocada','Telescopagem de fratura panfacial com retrusão do terço médio','Anquilose prévia de ATM','Hipertrofia condilar bilateral'], a:1, e:'Em traumas panfaciais graves, o impacto pode "telescopar" (impactar posteriormente) o terço médio da face contra a base do crânio, gerando retrusão maxilar aguda e má oclusão classe III.'},
+{c:'trauma', q:'O chamado "sinal do bigode" (mustache sign), visto em radiografia panorâmica, é característico de fratura em qual região?', o:['Côndilo','Ângulo mandibular','Sínfise/parassínfise','Processo coronoide'], a:2, e:'A sobreposição de fragmentos na região de sínfise/parassínfise cria uma imagem radiopaca em formato de bigode sobre a linha média mandibular.'},
+{c:'trauma', q:'Na abordagem inicial de um paciente politraumatizado com trauma facial grave, qual é a prioridade absoluta segundo o protocolo ATLS?', o:['Reparo estético imediato das lacerações faciais','Garantia de via aérea pérvia e controle cervical','Redução das fraturas dentárias','Radiografia panorâmica antes de qualquer intervenção'], a:1, e:'Independente da gravidade do trauma facial, a via aérea (com proteção da coluna cervical) é sempre a prioridade inicial no atendimento ao politraumatizado.'},
+{c:'trauma', q:'Uma fratura orbital "blow-out" pura caracteriza-se por:', o:['Envolver apenas o assoalho ou parede medial da órbita, preservando a borda orbital','Sempre envolver fratura associada da borda infraorbitária','Ser exclusiva de pacientes idosos','Nunca causar encarceramento muscular'], a:0, e:'No blow-out puro, a borda orbital permanece íntegra e a fratura acomete apenas as paredes internas (assoalho e/ou parede medial), diferente do blow-out impuro, que envolve também a borda.'},
+{c:'trauma', q:'Em fraturas mandibulares múltiplas, a sequência lógica de tratamento geralmente prioriza:', o:['Reduzir primeiro a fratura mais distante da linha média','Restabelecer a oclusão antes da fixação definitiva dos focos de fratura','Fixar rigidamente todos os focos antes de checar a oclusão','Ignorar a oclusão prévia do paciente'], a:1, e:'Restabelecer a relação oclusal correta (frequentemente com bloqueio maxilomandibular guia) antes da fixação definitiva é fundamental para garantir um resultado funcional adequado.'},
+
+// ---------- ORTOGNÁTICA (20) ----------
+{c:'orto', q:'A osteotomia sagital do ramo mandibular, técnica clássica para avanço ou recuo mandibular, é também conhecida como técnica de:', o:['Obwegeser-Dal Pont','Le Fort I modificado','Kufner','Wassmund'], a:0, e:'A BSSO (Bilateral Sagittal Split Osteotomy) foi descrita por Obwegeser e modificada por Dal Pont, sendo a técnica mais utilizada para reposicionamento mandibular.'},
+{c:'orto', q:'A osteotomia de Le Fort I é indicada principalmente para:', o:['Reposicionamento isolado do côndilo mandibular','Reposicionamento tridimensional da maxila','Correção isolada do mento','Ressecção de tumores da base do crânio'], a:1, e:'A Le Fort I permite mobilização e reposicionamento da maxila em avanço, recuo, impactação ou rotação, sendo a base da maioria das cirurgias ortognáticas maxilares.'},
+{c:'orto', q:'A genioplastia consiste classicamente em:', o:['Osteotomia horizontal do corpo mandibular anterior (mento)','Ressecção do processo coronoide','Avanço bimaxilar','Distração do côndilo'], a:0, e:'A genioplastia é uma osteotomia horizontal na região anterior da mandíbula (mento), permitindo avanço, recuo, redução vertical ou aumento vertical do mento.'},
+{c:'orto', q:'Na análise cefalométrica, um ângulo ANB negativo geralmente está associado a:', o:['Padrão esquelético classe I','Padrão esquelético classe II','Padrão esquelético classe III','Ausência de discrepância sagital'], a:2, e:'ANB negativo indica que o ponto B está anterior ao ponto A em relação à base do crânio, característico do padrão esquelético classe III (relativa protrusão mandibular ou deficiência maxilar).'},
+{c:'orto', q:'Um valor de SNA aumentado na cefalometria sugere:', o:['Retrusão maxilar','Protrusão maxilar em relação à base do crânio','Retrognatismo mandibular isolado','Excesso vertical de mento'], a:1, e:'SNA mede a posição anteroposterior da maxila em relação à base do crânio; valores aumentados indicam maxila mais protruída.'},
+{c:'orto', q:'No planejamento cirúrgico-ortodôntico convencional, a ortodontia pré-cirúrgica tem como um dos principais objetivos:', o:['Criar compensações dentárias adicionais para mascarar a discrepância esquelética','Descompensar os dentes, expondo a real discrepância esquelética para a cirurgia corrigir','Fechar todos os espaços interdentais antes da cirurgia','Extrair sempre os primeiros molares'], a:1, e:'A descompensação dentária pré-cirúrgica remove compensações que mascaravam a discrepância óssea, permitindo que a cirurgia corrija efetivamente a base esquelética.'},
+{c:'orto', q:'A complicação neurossensorial mais comum após osteotomia sagital do ramo mandibular é:', o:['Lesão do nervo facial','Parestesia do nervo alveolar inferior','Lesão do nervo hipoglosso','Lesão do nervo acessório'], a:1, e:'Por proximidade anatômica direta com o trajeto do nervo alveolar inferior dentro do ramo mandibular, a parestesia transitória (e por vezes permanente) desse nervo é a complicação neurossensorial mais frequente na BSSO.'},
+{c:'orto', q:'Em grandes avanços mandibulares cirúrgicos, o principal fator associado a maior tendência de recidiva é:', o:['Magnitude do avanço e tensão nos tecidos moles/musculatura suprahioidea','Uso de fixação rígida interna','Idade do paciente acima de 40 anos','Ausência de bloqueio maxilomandibular pós-operatório'], a:0, e:'Quanto maior o avanço mandibular, maior a tensão exercida pelos tecidos moles e pela musculatura suprahioidea, aumentando a tendência de recidiva ao longo do tempo.'},
+{c:'orto', q:'Um "split desfavorável" (bad split) durante a osteotomia sagital do ramo refere-se a:', o:['Fratura inadequada/inesperada fora do padrão planejado durante a separação dos segmentos','Posicionamento incorreto do splint cirúrgico','Falha de consolidação óssea tardia','Infecção pós-operatória do sítio cirúrgico'], a:0, e:'O bad split é uma complicação intraoperatória em que a linha de fratura não segue o padrão sagital planejado, podendo comprometer a fixação e a estabilidade do segmento.'},
+{c:'orto', q:'Em cirurgia ortognática bimaxilar, a sequência cirúrgica mais tradicionalmente adotada é:', o:['Mandíbula primeiro, depois maxila','Maxila primeiro, depois mandíbula','Mento primeiro, depois maxila e mandíbula simultaneamente','Não há sequência padrão, é sempre aleatória'], a:1, e:'Tradicionalmente opera-se a maxila primeiro, estabelecendo sua posição final, para então posicionar a mandíbula em relação a ela usando o splint intermediário e a nova oclusão.'},
+{c:'orto', q:'A distração osteogênica mandibular é uma técnica particularmente indicada em casos de:', o:['Mordida aberta anterior leve em adulto','Hipoplasia mandibular severa, especialmente em pacientes pediátricos','Assimetria facial mínima sem comprometimento funcional','Excesso vertical isolado de maxila'], a:1, e:'A distração osteogênica permite ganhos ósseos maiores e graduais, sendo especialmente útil em hipoplasias mandibulares severas e em pacientes com crescimento ainda ativo.'},
+{c:'orto', q:'A osteotomia Le Fort II é indicada principalmente para correção de:', o:['Deficiência isolada do mento','Deficiência nasomaxilar (região central da face média)','Hipertrofia condilar unilateral','Excesso mandibular isolado'], a:1, e:'O Le Fort II reposiciona o segmento nasomaxilar, sendo indicado em deficiências centrais do terço médio da face, diferente do Le Fort I, que envolve apenas a maxila dentoalveolar.'},
+{c:'orto', q:'A função principal do splint (guia) cirúrgico intermediário em cirurgia ortognática bimaxilar é:', o:['Fixar rigidamente os fragmentos ósseos de forma definitiva','Guiar o posicionamento correto entre maxila e mandíbula durante a cirurgia','Substituir a necessidade de fixação interna','Proteger apenas os tecidos moles durante a intubação'], a:1, e:'O splint intermediário posiciona corretamente a mandíbula em relação à nova posição maxilar já fixada, servindo como guia oclusal durante a cirurgia.'},
+{c:'orto', q:'Um paciente com retrognatismo mandibular isolado (classe II esquelética por deficiência mandibular) é candidato típico a:', o:['Le Fort I de impacção','Avanço mandibular por BSSO','Recuo mandibular','Genioplastia de redução isolada'], a:1, e:'O avanço mandibular corrige diretamente a deficiência sagital da mandíbula, tratando a classe II esquelética de origem mandibular.'},
+{c:'orto', q:'Em casos de mordida aberta anterior esquelética por excesso vertical maxilar posterior, a cirurgia indicada é geralmente:', o:['Avanço mandibular isolado','Impactação (redução vertical) da maxila posterior via Le Fort I','Genioplastia de aumento vertical','Distração mandibular bilateral'], a:1, e:'A impactação da maxila posterior reduz a altura facial inferior excessiva, permitindo autorrotação anti-horária da mandíbula e fechamento da mordida aberta.'},
+{c:'orto', q:'A avaliação da via aérea superior é especialmente relevante no planejamento de cirurgia ortognática em pacientes com:', o:['Apneia obstrutiva do sono (SAOS)','Bruxismo isolado sem comprometimento funcional','Diastema interincisivo','Torus palatino assintomático'], a:0, e:'O avanço maxilomandibular é uma das principais opções cirúrgicas para aumentar o espaço aéreo faríngeo em pacientes com SAOS associada a deficiências esqueléticas.'},
+{c:'orto', q:'A segmentação cirúrgica da maxila durante uma Le Fort I pode ser utilizada principalmente para:', o:['Reduzir o tempo cirúrgico total','Permitir expansão transversal cirúrgica e correção de discrepâncias segmentares','Evitar a necessidade de fixação interna','Eliminar a necessidade de planejamento cefalométrico'], a:1, e:'A segmentação (divisão da maxila em blocos) permite correções transversais e ajustes independentes de segmentos, algo que uma osteotomia em bloco único não permite.'},
+{c:'orto', q:'A fixação interna rígida (placas e parafusos) em cirurgia ortognática, em comparação com a fixação intermaxilar prolongada isolada, trouxe como principal vantagem:', o:['Redução da necessidade de bloqueio maxilomandibular prolongado, permitindo função precoce','Eliminação total do risco de recidiva','Dispensa de exames de imagem pós-operatórios','Redução do custo cirúrgico total'], a:0, e:'A fixação rígida estabiliza os segmentos de forma suficiente para permitir mobilização funcional precoce, reduzindo (mas não eliminando) a necessidade de bloqueio maxilomandibular prolongado.'},
+{c:'orto', q:'Assimetria facial progressiva associada a hiperplasia condilar ativa geralmente requer, antes da cirurgia ortognática definitiva, a avaliação de:', o:['Atividade de crescimento condilar (ex.: cintilografia óssea)','Apenas radiografia periapical dos incisivos','Teste de vitalidade pulpar dos molares','Densitometria óssea da coluna'], a:0, e:'Antes de planejar a correção definitiva, é importante confirmar se a hiperplasia condilar ainda está ativa (por exemplo, com cintilografia óssea), pois isso influencia o momento e o tipo de tratamento indicado.'},
+{c:'orto', q:'O planejamento virtual tridimensional (3D) em cirurgia ortognática, em comparação ao planejamento convencional em modelos de gesso, oferece principalmente:', o:['Maior precisão na simulação do movimento ósseo e confecção de guias/splints personalizados','Eliminação total da necessidade de exame clínico','Dispensa de cefalometria pré-operatória','Garantia absoluta de ausência de recidiva'], a:0, e:'O planejamento 3D permite simular com maior precisão os movimentos ósseos planejados e confeccionar guias cirúrgicos e splints personalizados, aumentando a previsibilidade do resultado.'},
+
+// ---------- DENTOALVEOLAR / TERCEIROS MOLARES (20) ----------
+{c:'dentoalv', q:'A classificação de Pell & Gregory relaciona a posição do terceiro molar inferior incluso principalmente com:', o:['A cor do dente à radiografia','A relação do dente com o ramo mandibular e o segundo molar (profundidade e espaço disponível)','O número de raízes do dente','A presença de cárie associada'], a:1, e:'Pell & Gregory classificam a posição do terceiro molar em relação ao ramo mandibular (classes I, II, III) e à profundidade em relação ao plano oclusal (posições A, B, C).'},
+{c:'dentoalv', q:'A classificação de Winter para terceiros molares inferiros inclusos baseia-se principalmente em:', o:['A angulação do dente em relação ao longo eixo do segundo molar','O tipo de anestesia utilizada','A presença de infecção prévia','A idade do paciente'], a:0, e:'Winter classifica a posição do dente incluso conforme sua angulação (mesioangular, distoangular, vertical, horizontal, entre outras) em relação ao eixo longitudinal do segundo molar adjacente.'},
+{c:'dentoalv', q:'A complicação pós-operatória mais comum após exodontia de terceiro molar inferior é:', o:['Osteomielite','Alveolite (osteíte alveolar)','Fratura mandibular tardia','Sialorreia'], a:1, e:'A alveolite, ou osteíte alveolar (popularmente "alvéolo seco"), é a complicação pós-operatória mais frequente, geralmente entre o 2º e 4º dia pós-operatório.'},
+{c:'dentoalv', q:'Entre os fatores de risco classicamente associados à alveolite pós-exodontia, destaca-se:', o:['Tabagismo','Uso de fio dental regular','Idade inferior a 18 anos','Escovação três vezes ao dia'], a:0, e:'O tabagismo (por vasoconstrição e sucção) é um fator de risco bem estabelecido para alveolite, junto de fatores como uso de anticoncepcionais orais e trauma cirúrgico excessivo.'},
+{c:'dentoalv', q:'Durante a exodontia de um terceiro molar inferior incluso, quais nervos estão classicamente em maior risco de lesão?', o:['Alveolar inferior e lingual','Infraorbitário e nasopalatino','Facial e hipoglosso','Óptico e trigêmeo (ramo oftálmico)'], a:0, e:'A proximidade anatômica do nervo alveolar inferior (dentro do canal mandibular) e do nervo lingual (próximo à cortical lingual) torna ambos vulneráveis durante essa cirurgia.'},
+{c:'dentoalv', q:'Na radiografia panorâmica, quais sinais sugerem proximidade íntima entre a raiz do terceiro molar e o canal mandibular?', o:['Aumento da densidade radiográfica da raiz','Escurecimento (radioluscência) da raiz e interrupção das linhas radiopacas do canal','Presença de cárie oclusal','Reabsorção da coroa dentária'], a:1, e:'Sinais radiográficos clássicos de proximidade com o canal mandibular incluem escurecimento da raiz onde cruza o canal, interrupção da lâmina dura do canal e estreitamento do próprio canal.'},
+{c:'dentoalv', q:'Uma pequena comunicação buco-sinusal identificada imediatamente após exodontia de um molar superior, sem sinais de infecção, geralmente é manejada por:', o:['Fechamento imediato com retalho e orientações para evitar aumento de pressão intraoral','Encaminhamento cirúrgico de urgência hospitalar obrigatório','Preenchimento com material restaurador definitivo no mesmo momento','Nenhuma conduta é necessária'], a:0, e:'Comunicações pequenas costumam ser tratadas com sutura em "X" ou retalho local, além de orientações para evitar assoar o nariz e criar pressão negativa intraoral, prevenindo alargamento da comunicação.'},
+{c:'dentoalv', q:'A técnica de odontosecção durante a exodontia de terceiros molares tem como principal finalidade:', o:['Reduzir o risco de fratura mandibular e facilitar a remoção com menor osteotomia','Acelerar exclusivamente o tempo cirúrgico sem outro benefício','Evitar o uso de anestesia local','Substituir a necessidade de radiografia pré-operatória'], a:0, e:'Seccionar o dente em fragmentos permite removê-lo por partes, reduzindo a necessidade de ostectomia extensa e o risco de fratura mandibular, especialmente em dentes profundamente inclusos.'},
+{c:'dentoalv', q:'A coronectomia (remoção apenas da coroa, mantendo raízes) é uma técnica indicada principalmente quando:', o:['Há alto risco de lesão do nervo alveolar inferior por proximidade radicular íntima','O paciente deseja anestesia geral','Há infecção ativa periapical extensa','O dente está totalmente erupcionado'], a:0, e:'Quando há íntima proximidade radicular com o canal mandibular, a coronectomia reduz o risco de lesão nervosa por evitar a manipulação/remoção completa da raiz.'},
+{c:'dentoalv', q:'A parestesia classificada como "transitória" após cirurgia de terceiro molar geralmente se refere à alteração de sensibilidade que:', o:['É permanente e irreversível por definição','Se resolve espontaneamente dentro de um período de até aproximadamente 6 meses a 1 ano','Sempre requer intervenção microcirúrgica imediata','Só ocorre em pacientes idosos'], a:1, e:'Parestesias transitórias costumam se resolver espontaneamente em até 6-12 meses; quando persistem além desse prazo, são consideradas permanentes.'},
+{c:'dentoalv', q:'A tomografia computadorizada de feixe cônico (TCFC) é particularmente indicada antes da exodontia de terceiros molares quando:', o:['Há sinais radiográficos panorâmicos sugestivos de proximidade com o canal mandibular','O dente está totalmente erupcionado sem inclusão','O paciente é jovem e saudável sem outros achados','Nunca é indicada em odontologia'], a:0, e:'Diante de sinais radiográficos de risco (interrupção do canal, escurecimento radicular), a TCFC fornece informação tridimensional sobre a real relação entre raiz e canal mandibular, auxiliando o planejamento.'},
+{c:'dentoalv', q:'A pericoronarite é um processo inflamatório/infeccioso que ocorre classicamente:', o:['Nos tecidos moles ao redor da coroa de um dente parcialmente erupcionado','Exclusivamente no ápice radicular de dentes despolpados','Na glândula parótida','Na articulação temporomandibular'], a:0, e:'A pericoronarite envolve inflamação do tecido mole (opérculo) que recobre parcialmente a coroa de um dente em erupção, comumente o terceiro molar inferior, favorecida pelo acúmulo de biofilme e restos alimentares.'},
+{c:'dentoalv', q:'A fratura de tuberosidade maxilar durante uma exodontia está mais associada a:', o:['Extração de terceiros molares superiores com uso de força excessiva ou inadequada','Extração de incisivos inferiores','Uso de anestesia tópica isolada','Idade pediátrica exclusivamente'], a:0, e:'A tuberosidade maxilar é uma região de osso mais frágil, e a extração de molares superiores (especialmente terceiros molares) com técnica ou força inadequadas aumenta o risco dessa fratura.'},
+{c:'dentoalv', q:'Na classificação de Pell & Gregory, um dente classificado como "classe C" está posicionado:', o:['Totalmente acima do plano oclusal do segundo molar','No mesmo nível do plano oclusal do segundo molar','Abaixo do plano cervical do segundo molar (posição mais profunda)','Sempre horizontalizado'], a:2, e:'A posição C indica que o dente está abaixo da linha cervical do segundo molar adjacente, representando maior profundidade de inclusão e, geralmente, maior complexidade cirúrgica.'},
+{c:'dentoalv', q:'A antibioticoprofilaxia sistêmica de rotina em exodontias simples de terceiros molares, em pacientes saudáveis, é atualmente considerada:', o:['Obrigatória em todos os casos, independentemente do risco','Reservada a situações específicas de maior risco (ex.: cirurgias mais complexas, comorbidades sistêmicas relevantes)','Contraindicada sempre','Indicada apenas para pacientes menores de 18 anos'], a:1, e:'A literatura atual não recomenda antibioticoprofilaxia rotineira em pacientes saudáveis submetidos a exodontias simples, reservando essa conduta para casos selecionados de maior risco.'},
+{c:'dentoalv', q:'A osteomielite dos maxilares após exodontia é favorecida principalmente por:', o:['Boa vascularização local e paciente jovem saudável','Condições que comprometem a vascularização óssea, como osteorradionecrose prévia ou imunossupressão','Uso de anestésico local sem vasoconstritor','Higiene bucal excelente'], a:1, e:'Fatores que comprometem a vascularização e a defesa imunológica local (radioterapia prévia, diabetes descompensado, imunossupressão) aumentam significativamente o risco de osteomielite pós-cirúrgica.'},
+{c:'dentoalv', q:'O retalho tipo "envelope" utilizado em cirurgia de terceiros molares caracteriza-se por:', o:['Incisão relaxante vertical associada obrigatoriamente','Incisão sulcular sem incisão relaxante vertical, seguindo o contorno gengival','Ser exclusivo para cirurgias em maxila','Necessitar sempre de enxerto associado'], a:1, e:'O retalho envelope acompanha o sulco gengival sem incisão de relaxamento vertical, sendo uma opção mais conservadora em relação ao retalho triangular.'},
+{c:'dentoalv', q:'O uso de crioterapia (compressas frias) no pós-operatório imediato de exodontia de terceiros molares tem como principal objetivo:', o:['Reduzir edema e desconforto local nas primeiras 24-48 horas','Acelerar a cicatrização óssea final','Substituir o uso de analgésicos','Prevenir infecção bacteriana'], a:0, e:'A crioterapia nas primeiras horas/dias reduz o edema e o desconforto por vasoconstrição local, sendo um coadjuvante e não um substituto da analgesia medicamentosa.'},
+{c:'dentoalv', q:'A indicação de extração profilática (preventiva) de terceiros molares assintomáticos e sem patologia associada é, atualmente, um tema:', o:['Consensual e sempre indicado em qualquer idade','Controverso, avaliado caso a caso considerando risco-benefício individual','Proibido pelas diretrizes internacionais','Indicado apenas em pacientes idosos'], a:1, e:'A extração profilática de terceiros molares assintomáticos permanece controversa, devendo-se avaliar fatores individuais como posição, risco de patologias futuras e proximidade com estruturas nobres.'},
+
+// ---------- PATOLOGIA ORAL E ATM (20) ----------
+{c:'patoatm', q:'O ameloblastoma é classicamente descrito como um tumor odontogênico com qual característica principal de comportamento?', o:['Totalmente benigno, sem potencial de recidiva','Localmente agressivo, com tendência a recidiva se tratado de forma conservadora','Sempre maligno com metástase precoce','Exclusivo de tecidos moles, sem envolvimento ósseo'], a:1, e:'O ameloblastoma, apesar de histologicamente benigno na maioria dos casos, apresenta comportamento localmente agressivo e alta taxa de recidiva quando tratado apenas por curetagem, sendo frequentemente indicada ressecção com margem de segurança.'},
+{c:'patoatm', q:'O cisto odontogênico mais frequentemente encontrado nos maxilares é o:', o:['Cisto dentígero','Cisto radicular (periapical)','Ceratocisto odontogênico','Cisto residual'], a:1, e:'O cisto radicular, de origem inflamatória associada à necrose pulpar, é o cisto odontogênico mais comum nos maxilares.'},
+{c:'patoatm', q:'O ceratocisto odontogênico é conhecido por apresentar, entre outras características:', o:['Baixíssima taxa de recidiva mesmo após simples curetagem','Alta taxa de recidiva e associação possível com a síndrome de Gorlin-Goltz (síndrome do carcinoma nevoide basocelular)','Origem exclusivamente traumática','Ocorrência restrita à maxila'], a:1, e:'O ceratocisto (atualmente também classificado por muitos como tumor odontogênico ceratocístico) tem alta taxa de recidiva e pode estar associado à síndrome de Gorlin-Goltz, especialmente quando múltiplo.'},
+{c:'patoatm', q:'O tumor odontogênico adenomatoide (TOA) é classicamente descrito por sua associação com:', o:['Pacientes idosos e região posterior de mandíbula','Adolescentes e adultos jovens, frequentemente associado a dente incluso, região anterior de maxila','Metástases pulmonares frequentes','Ausência total de componente epitelial'], a:1, e:'O TOA acomete predominantemente pacientes jovens, com predileção pela região anterior da maxila, muitas vezes associado a um dente permanente incluso (frequentemente canino).'},
+{c:'patoatm', q:'A rânula é uma lesão de retenção mucosa originada principalmente da glândula:', o:['Parótida','Sublingual','Submandibular exclusivamente','Lacrimal'], a:1, e:'A rânula é classicamente associada ao extravasamento de muco proveniente da glândula sublingual, localizando-se no assoalho da boca.'},
+{c:'patoatm', q:'A mucocele oral tem como mecanismo fisiopatológico mais comum:', o:['Proliferação neoplásica do epitélio glandular','Extravasamento de muco para o tecido conjuntivo após ruptura traumática do ducto de uma glândula salivar menor','Infecção bacteriana crônica isolada','Depósito de cálculo salivar (sialólito)'], a:1, e:'A mucocele, especialmente em lábio inferior, geralmente resulta de trauma local que rompe o ducto de uma glândula salivar menor, levando ao extravasamento de mucina para o tecido conjuntivo adjacente.'},
+{c:'patoatm', q:'A displasia fibrosa dos maxilares é classicamente descrita radiograficamente com aspecto de:', o:['Radiolucência bem definida com halo esclerótico','"Vidro fosco" (ground glass), com margens mal definidas que se fundem ao osso normal','Múltiplas radiopacidades puntiformes','Imagem em "favo de mel" bem circunscrita'], a:1, e:'A displasia fibrosa apresenta tipicamente um padrão radiográfico em "vidro fosco", com transição gradual e mal definida entre a lesão e o osso normal adjacente.'},
+{c:'patoatm', q:'A classificação de Wilkes é utilizada para estadiamento de qual condição?', o:['Displasia fibrosa','Desarranjo interno da articulação temporomandibular','Osteonecrose dos maxilares','Ceratocisto odontogênico'], a:1, e:'A classificação de Wilkes descreve estágios progressivos (I a V) do desarranjo interno da ATM, correlacionando achados clínicos, de imagem e cirúrgicos.'},
+{c:'patoatm', q:'O deslocamento de disco articular da ATM "com redução" caracteriza-se clinicamente por:', o:['Bloqueio permanente da abertura bucal, sem ruído articular','Presença de estalido (clique) durante a abertura e/ou fechamento, com o disco retornando a posição normal em relação ao côndilo','Ausência completa de qualquer ruído articular','Fusão óssea entre côndilo e fossa mandibular'], a:1, e:'No deslocamento com redução, o disco está deslocado em repouso, mas retorna à posição correta durante o movimento mandibular, gerando o clássico estalido articular.'},
+{c:'patoatm', q:'A anquilose da ATM, quando estabelecida e sintomática (limitação funcional importante), geralmente requer como tratamento definitivo:', o:['Apenas fisioterapia isolada, sem intervenção cirúrgica','Intervenção cirúrgica, frequentemente com artroplastia e reconstrução articular','Uso exclusivo de placas oclusais por tempo indeterminado','Nenhum tratamento é necessário'], a:1, e:'Casos estabelecidos de anquilose com limitação funcional significativa geralmente exigem abordagem cirúrgica (artroplastia, com ou sem reconstrução), associada a fisioterapia pós-operatória intensiva.'},
+{c:'patoatm', q:'A leucoplasia oral é definida como uma lesão:', o:['Placa ou mancha branca com potencial de malignização, de diagnóstico de exclusão','Sempre benigna e sem necessidade de acompanhamento','Exclusivamente de origem infecciosa fúngica','Diagnóstico histopatológico específico e definitivo por si só'], a:0, e:'A leucoplasia é um diagnóstico clínico de exclusão para uma lesão predominantemente branca que não pode ser caracterizada como qualquer outra doença, apresentando potencial variável de transformação maligna.'},
+{c:'patoatm', q:'O líquen plano oral, em sua forma reticular, é caracteristicamente identificado pela presença de:', o:['Estrias brancas entrelaçadas (estrias de Wickham)','Vesículas hemorrágicas extensas','Pápulas amareladas isoladas','Ulceração profunda única e indolor'], a:0, e:'As estrias de Wickham (linhas brancas entrelaçadas, geralmente em mucosa jugal bilateral) são o achado clínico clássico da forma reticular do líquen plano oral.'},
+{c:'patoatm', q:'O principal fator de risco associado ao carcinoma epidermoide (carcinoma de células escamosas) de boca é:', o:['Uso combinado de tabaco e álcool','Uso regular de fio dental','Bruxismo noturno isolado','Consumo excessivo de água'], a:0, e:'O tabagismo e o etilismo, especialmente em associação, são os principais fatores de risco bem estabelecidos para o carcinoma epidermoide de cavidade oral.'},
+{c:'patoatm', q:'A biópsia excisional, em comparação à incisional, é indicada preferencialmente quando:', o:['A lesão é grande e clinicamente muito suspeita de malignidade extensa','A lesão é pequena, acessível e com baixa suspeita clínica de malignidade extensa, permitindo remoção completa diagnóstica e terapêutica','Nunca deve ser realizada em cavidade oral','É obrigatória em toda lesão, independente do tamanho'], a:1, e:'A biópsia excisional remove a lesão inteira e é indicada para lesões pequenas e acessíveis, servindo simultaneamente como diagnóstico e tratamento; lesões grandes ou muito suspeitas geralmente indicam biópsia incisional prévia.'},
+{c:'patoatm', q:'Um torus mandibular ou palatino assintomático, sem indicação protética ou funcional específica, geralmente requer:', o:['Remoção cirúrgica obrigatória imediata','Apenas acompanhamento clínico, sem necessidade de remoção rotineira','Biópsia obrigatória por ser sempre suspeito de malignidade','Radioterapia local'], a:1, e:'Tori assintomáticos são exostoses benignas comuns e geralmente não requerem remoção, exceto quando causam problemas funcionais, protéticos ou traumas recorrentes.'},
+{c:'patoatm', q:'A osteonecrose dos maxilares associada ao uso de bisfosfonatos está classicamente relacionada a qual fator de risco odontológico?', o:['Uso de bochecho fluoretado diário','Procedimentos cirúrgicos dentoalveolares invasivos, como exodontias, em pacientes usuários do medicamento','Escovação dentária regular','Uso de anestésico local sem vasoconstritor'], a:1, e:'Procedimentos invasivos como exodontias em pacientes em uso (especialmente prolongado ou endovenoso) de bisfosfonatos são um fator de risco reconhecido para o desenvolvimento de osteonecrose medicamentosa dos maxilares.'},
+{c:'patoatm', q:'No manejo inicial da síndrome de dor miofascial mastigatória, a abordagem preferencial costuma ser:', o:['Cirurgia articular imediata','Medidas conservadoras: educação, controle de hábitos parafuncionais, terapia física e placas oclusais quando indicadas','Bloqueio anestésico definitivo permanente','Extração de todos os dentes posteriores'], a:1, e:'A dor miofascial, uma das formas mais comuns de disfunção temporomandibular, geralmente responde bem a medidas conservadoras antes de se considerar qualquer intervenção mais invasiva.'},
+{c:'patoatm', q:'A manobra de Nélaton é classicamente associada ao manejo de qual condição da ATM?', o:['Anquilose óssea estabelecida','Luxação (deslocamento) mandibular aguda','Fratura de côndilo bilateral','Displasia fibrosa condilar'], a:1, e:'A manobra de Nélaton (pressão bilateral posteroinferior sobre os molares com os polegares, seguida de rotação) é uma técnica manual clássica para reduzir a luxação aguda da ATM.'},
+{c:'patoatm', q:'A sialolitíase (cálculo salivar) acomete mais frequentemente qual glândula salivar maior?', o:['Parótida','Submandibular','Sublingual','Todas com igual frequência'], a:1, e:'A glândula submandibular é a mais frequentemente acometida por sialolitíase, devido às características de seu ducto (Wharton) — mais longo, com fluxo mais lento e saliva mais viscosa e alcalina.'},
+{c:'patoatm', q:'O tumor de Warthin (cistoadenoma papilífero linfomatoso) apresenta como característica típica:', o:['Predileção quase exclusiva pela glândula parótida, com associação ao tabagismo','Ocorrência predominante em glândulas salivares menores do palato','Alto potencial de malignização precoce','Predileção por crianças pequenas'], a:0, e:'O tumor de Warthin acomete quase exclusivamente a parótida, sendo fortemente associado ao tabagismo, além de poder ser bilateral em alguns casos.'},
+
+// ---------- FARMACOLOGIA APLICADA (20) ----------
+{c:'farmaco', q:'Entre os AINEs, qual é frequentemente considerado de primeira escolha para controle de dor pós-operatória em cirurgia oral menor, por seu perfil de eficácia e segurança relativamente favorável?', o:['Ibuprofeno','Ácido acetilsalicílico em altas doses','Indometacina','Piroxicam'], a:0, e:'O ibuprofeno é amplamente utilizado como AINE de primeira escolha em dor pós-operatória odontológica leve a moderada, por bom perfil de eficácia analgésica/anti-inflamatória e segurança relativa.'},
+{c:'farmaco', q:'Em infecções odontogênicas de origem bacteriana mista, o antibiótico frequentemente considerado de primeira escolha empírica é:', o:['Amoxicilina','Ciprofloxacino','Gentamicina','Vancomicina'], a:0, e:'A amoxicilina, por seu espectro contra os principais patógenos orais e boa penetração tecidual, é geralmente a primeira escolha empírica em infecções odontogênicas simples.'},
+{c:'farmaco', q:'Em pacientes com alergia comprovada à penicilina que necessitam de antibioticoterapia para infecção odontogênica, uma alternativa comum é:', o:['Clindamicina','Amoxicilina em dose reduzida','Ampicilina','Penicilina benzatina'], a:0, e:'A clindamicina é uma alternativa eficaz e amplamente utilizada em pacientes alérgicos à penicilina para infecções odontogênicas, cobrindo bem anaeróbios orais.'},
+{c:'farmaco', q:'Entre os corticosteroides, a dexametasona é frequentemente utilizada no contexto cirúrgico odontológico principalmente para:', o:['Tratamento definitivo de infecção bacteriana','Redução de edema e trismo pós-operatórios em cirurgias mais complexas','Substituição de analgésicos no controle da dor','Profilaxia de sangramento'], a:1, e:'A dexametasona, por sua potente ação anti-inflamatória, é frequentemente usada perioperatoriamente para reduzir edema, trismo e desconforto após cirurgias mais invasivas, como remoção de terceiros molares inclusos.'},
+{c:'farmaco', q:'A associação de AINEs com anticoagulantes orais (como varfarina) deve ser feita com cautela principalmente pelo risco de:', o:['Aumento do risco de sangramento por interação farmacológica e efeito antiplaquetário adicional','Redução da eficácia analgésica do AINE','Formação de cálculos renais imediatos','Hipoglicemia grave'], a:0, e:'AINEs podem potencializar o efeito anticoagulante e ainda causar irritação/sangramento gastrointestinal e efeito antiplaquetário adicional, aumentando o risco hemorrágico quando associados a anticoagulantes.'},
+{c:'farmaco', q:'A dose máxima diária recomendada de paracetamol em adultos saudáveis, sem hepatopatia, é geralmente considerada em torno de:', o:['1 grama por dia','4 gramas por dia','10 gramas por dia','Não há limite diário estabelecido'], a:1, e:'A dose máxima diária de paracetamol em adultos saudáveis costuma ser referenciada em até 4g/dia, acima da qual aumenta significativamente o risco de hepatotoxicidade.'},
+{c:'farmaco', q:'O principal mecanismo de ação dos anti-inflamatórios não esteroidais (AINEs) é:', o:['Bloqueio de receptores opioides centrais','Inibição da enzima ciclo-oxigenase (COX), reduzindo a síntese de prostaglandinas','Bloqueio direto dos canais de sódio neuronais','Estímulo à liberação de cortisol endógeno'], a:1, e:'Os AINEs atuam inibindo as enzimas COX-1 e/ou COX-2, reduzindo a produção de prostaglandinas envolvidas na inflamação, dor e febre.'},
+{c:'farmaco', q:'A associação amoxicilina + ácido clavulânico é particularmente útil em relação à amoxicilina isolada porque:', o:['O clavulanato tem ação analgésica potente isolada','O ácido clavulânico inibe betalactamases bacterianas, ampliando a cobertura contra cepas produtoras dessa enzima','Reduz o custo total do tratamento','Elimina a necessidade de qualquer cuidado com alergias'], a:1, e:'O ácido clavulânico é um inibidor de betalactamase, ampliando o espectro de ação da amoxicilina contra bactérias que produzem essa enzima de resistência.'},
+{c:'farmaco', q:'Em pacientes com risco de endocardite infecciosa segundo diretrizes específicas, a profilaxia antibiótica clássica recomendada antes de procedimentos odontológicos invasivos costuma incluir:', o:['Amoxicilina 2g via oral, cerca de 1 hora antes do procedimento','Vancomicina intramuscular no pós-operatório imediato apenas','Corticoide isolado, sem antibiótico','Metronidazol tópico local'], a:0, e:'O esquema clássico de profilaxia para endocardite em pacientes de risco elevado envolve amoxicilina 2g via oral cerca de 1 hora antes do procedimento odontológico invasivo, com alternativas para alérgicos.'},
+{c:'farmaco', q:'O metronidazol é particularmente útil em infecções odontogênicas graves por seu espectro de ação voltado principalmente para:', o:['Bactérias anaeróbias','Fungos filamentosos','Vírus da família Herpesviridae','Bactérias aeróbias gram-positivas exclusivamente'], a:0, e:'O metronidazol tem excelente cobertura contra anaeróbios, frequentemente associado à amoxicilina em infecções odontogênicas mais graves, dada a flora polimicrobiana com participação anaeróbia relevante.'},
+{c:'farmaco', q:'A associação de AINEs com anti-hipertensivos (como inibidores da ECA ou diuréticos) pode resultar em:', o:['Potencialização do efeito anti-hipertensivo','Redução da eficácia anti-hipertensiva e possível retenção hídrica','Hipoglicemia grave imediata','Nenhuma interação clinicamente relevante'], a:1, e:'AINEs podem reduzir a eficácia de várias classes de anti-hipertensivos e favorecer retenção de sódio e água, sendo uma interação clinicamente relevante especialmente em uso prolongado.'},
+{c:'farmaco', q:'O uso de corticosteroides sistêmicos em pacientes diabéticos requer atenção especial principalmente porque podem:', o:['Reduzir a glicemia de forma perigosa','Elevar a glicemia, dificultando o controle metabólico temporário do paciente','Não ter nenhuma relação com o metabolismo glicêmico','Curar definitivamente o diabetes tipo 2'], a:1, e:'Corticosteroides podem elevar a glicemia por efeito hiperglicemiante, exigindo monitorização mais cuidadosa em pacientes diabéticos durante seu uso, mesmo que por curto prazo.'},
+{c:'farmaco', q:'A analgesia multimodal pós-operatória em cirurgia oral, combinando AINE e paracetamol, tem como principal racional:', o:['Atuar em diferentes vias/mecanismos de dor, potencializando o efeito analgésico com menor dose individual de cada fármaco','Aumentar exclusivamente o custo do tratamento sem benefício clínico','Substituir totalmente a necessidade de anestesia local no procedimento','Eliminar por completo qualquer necessidade de repouso pós-operatório'], a:0, e:'A combinação de fármacos com mecanismos de ação distintos (AINE e paracetamol) pode proporcionar melhor controle álgico com menores doses individuais, reduzindo efeitos colaterais relacionados a altas doses de um único agente.'},
+{c:'farmaco', q:'O uso de opioides em odontologia é geralmente reservado para:', o:['Toda e qualquer exodontia simples de rotina','Casos de dor pós-operatória moderada a intensa que não respondem adequadamente a analgésicos não opioides','Uso profilático rotineiro antes de qualquer procedimento','Substituição de antibióticos em infecções'], a:1, e:'Devido ao potencial de efeitos adversos e dependência, os opioides costumam ser reservados a situações de dor moderada a intensa refratária a analgésicos não opioides, geralmente por curto período.'},
+{c:'farmaco', q:'No tratamento farmacológico da candidíase oral, um antifúngico comumente utilizado topicamente é:', o:['Nistatina','Amoxicilina','Ibuprofeno','Dexametasona isolada'], a:0, e:'A nistatina, em suspensão oral tópica, é um antifúngico clássico e amplamente utilizado no tratamento da candidíase oral, junto de opções sistêmicas como o fluconazol em casos mais extensos.'},
+{c:'farmaco', q:'O bochecho com clorexidina 0,12% no pós-operatório de cirurgias orais tem como principal objetivo:', o:['Substituir totalmente a escovação mecânica','Auxiliar no controle químico do biofilme bacteriano local, reduzindo risco de infecção secundária','Branqueamento dentário','Anestesia tópica local'], a:1, e:'A clorexidina é um antisséptico de amplo espectro usado como coadjuvante no controle químico da placa bacteriana, especialmente útil quando a higienização mecânica está temporariamente dificultada pela cirurgia.'},
+{c:'farmaco', q:'A adição de vasoconstritor (como a epinefrina) ao anestésico local tem como principal benefício:', o:['Reduzir a absorção sistêmica do anestésico e prolongar sua duração de ação local','Eliminar totalmente a necessidade de técnica anestésica adequada','Reduzir o risco de qualquer reação alérgica','Aumentar exclusivamente a toxicidade do anestésico'], a:0, e:'O vasoconstritor reduz o fluxo sanguíneo local, diminuindo a absorção sistêmica do anestésico, prolongando sua duração de ação e reduzindo o sangramento no campo operatório.'},
+{c:'farmaco', q:'Em reações alérgicas leves (como urticária localizada) após uso de determinado medicamento odontológico, uma classe farmacológica comumente utilizada no manejo inicial é:', o:['Anti-histamínicos','Antibióticos betalactâmicos','Anticoagulantes orais','Bisfosfonatos'], a:0, e:'Anti-histamínicos são comumente utilizados no manejo de reações alérgicas leves a moderadas, como urticária, sendo reservadas medidas mais agressivas para reações graves/anafiláticas.'},
+{c:'farmaco', q:'O ácido tranexâmico, um agente antifibrinolítico, pode ser utilizado em odontologia principalmente para:', o:['Auxiliar no controle de sangramento em procedimentos de pacientes anticoagulados, muitas vezes topicamente (bochecho)','Tratar infecções bacterianas graves','Substituir anestésicos locais','Tratar hipertensão arterial sistêmica'], a:0, e:'O ácido tranexâmico, por sua ação antifibrinolítica, é utilizado (inclusive topicamente, como bochecho) para auxiliar no controle de sangramento em procedimentos odontológicos em pacientes sob terapia anticoagulante.'},
+{c:'farmaco', q:'Entre as classes de antibióticos, qual é classicamente contraindicada durante a gestação por risco de alterações na formação dentária e óssea fetal?', o:['Tetraciclinas','Penicilinas','Cefalosporinas de primeira geração','Amoxicilina isolada'], a:0, e:'As tetraciclinas são contraindicadas na gestação e em crianças pequenas por se depositarem em tecidos calcificados em formação, causando manchamento dentário e possíveis alterações no desenvolvimento ósseo.'},
+
+// ---------- ANESTESIOLOGIA (20) ----------
+{c:'anestesio', q:'A associação de lidocaína a 2% com epinefrina 1:100.000 é considerada, na prática odontológica, uma formulação:', o:['Rara e pouco utilizada','Padrão e amplamente utilizada, com bom equilíbrio entre eficácia e segurança','Contraindicada em qualquer paciente saudável','Exclusiva para anestesia geral'], a:1, e:'A lidocaína 2% com epinefrina 1:100.000 é uma das formulações mais utilizadas e estudadas em anestesia odontológica local, com bom perfil de eficácia e segurança na maioria dos pacientes.'},
+{c:'anestesio', q:'A articaína é frequentemente destacada na literatura por apresentar, em comparação a outros anestésicos locais amidas:', o:['Menor difusão em tecido ósseo','Maior capacidade de difusão em tecido ósseo, favorecendo técnicas infiltrativas mesmo em mandíbula','Contraindicação total em odontologia','Ação exclusivamente tópica'], a:1, e:'A articaína, por conter um anel tiofeno em sua estrutura, apresenta boa difusão em tecido ósseo, o que fundamenta seu uso, inclusive, em técnicas infiltrativas complementares em mandíbula.'},
+{c:'anestesio', q:'A prilocaína, especialmente em doses elevadas, está classicamente associada ao risco de:', o:['Hipertensão arterial grave','Metahemoglobinemia','Insuficiência renal aguda imediata','Broncoespasmo intenso isolado'], a:1, e:'A prilocaína, através de seu metabólito orto-toluidina, pode induzir metahemoglobinemia, especialmente em doses elevadas, sendo um cuidado importante em pacientes predispostos.'},
+{c:'anestesio', q:'A técnica clássica de bloqueio do nervo alveolar inferior, com referência ao ponto de injeção próximo à língula mandibular, é conhecida como técnica de:', o:['Gow-Gates','Halsted (técnica direta convencional)','Vazirani-Akinosi','Spix (denominação alternativa histórica, associada à técnica direta)'], a:1, e:'A técnica direta convencional de bloqueio do nervo alveolar inferior, referenciando a espinha de Spix e a língula mandibular, é classicamente atribuída a Halsted.'},
+{c:'anestesio', q:'A técnica de Gow-Gates para bloqueio do nervo mandibular tem como principal característica:', o:['Ser realizada com o paciente de boca fechada','Ter como alvo a região próxima ao colo do côndilo mandibular, bloqueando o nervo mandibular em um ponto mais alto','Ser indicada exclusivamente para dentes superiores','Não necessitar de aspiração prévia'], a:1, e:'A técnica de Gow-Gates busca anestesiar o nervo mandibular em uma região mais alta, próxima ao colo do côndilo, proporcionando bloqueio mais amplo (incluindo, por vezes, o nervo bucal).'},
+{c:'anestesio', q:'A técnica de Vazirani-Akinosi para bloqueio mandibular é particularmente indicada em pacientes com:', o:['Abertura bucal normal e sem limitações','Trismo ou limitação significativa de abertura bucal','Necessidade de anestesia apenas de tecidos moles do lábio superior','Contraindicação a qualquer anestésico local'], a:1, e:'A técnica de Vazirani-Akinosi é realizada com a boca fechada (técnica de boca fechada), sendo particularmente útil em pacientes com trismo que dificulta a abertura bucal necessária para técnicas convencionais.'},
+{c:'anestesio', q:'A classificação ASA (American Society of Anesthesiologists) é utilizada principalmente para:', o:['Classificar o tipo de anestésico local mais indicado','Estratificar o risco/estado físico sistêmico do paciente antes de procedimentos anestésicos/cirúrgicos','Determinar o tipo de sutura a ser utilizada','Avaliar exclusivamente a função renal do paciente'], a:1, e:'A classificação ASA estratifica o estado físico geral do paciente (de ASA I a ASA VI), auxiliando na avaliação de risco anestésico-cirúrgico antes de procedimentos.'},
+{c:'anestesio', q:'A sedação consciente com óxido nitroso/oxigênio tem como uma de suas principais vantagens:', o:['Início e recuperação rápidos, com boa margem de segurança quando bem indicada e monitorada','Efeito anestésico local completo, dispensando anestesia local associada','Ser totalmente isenta de qualquer contraindicação','Substituir integralmente a anestesia geral em qualquer cirurgia'], a:0, e:'O óxido nitroso tem início de ação rápido e recuperação igualmente rápida após sua suspensão, sendo uma opção relativamente segura para ansiólise/sedação leve quando bem indicada e monitorada, mas não substitui a anestesia local para controle da dor.'},
+{c:'anestesio', q:'A dose máxima recomendada de lidocaína com vasoconstritor, em miligramas por quilograma de peso corporal, é um parâmetro importante para:', o:['Definir apenas o sabor do anestésico','Prevenir toxicidade sistêmica por sobredosagem do anestésico local','Escolher a cor da agulha a ser utilizada','Determinar exclusivamente o tempo de validade do anestésico'], a:1, e:'Respeitar a dose máxima recomendada por peso corporal é fundamental para evitar toxicidade sistêmica (cardiovascular e do sistema nervoso central) por sobredosagem do anestésico local.'},
+{c:'anestesio', q:'A injeção intravascular acidental de anestésico local durante um bloqueio odontológico pode levar principalmente a:', o:['Melhora imediata do efeito anestésico local','Sinais de toxicidade sistêmica, como tontura, zumbido, alterações cardiovasculares e, em casos graves, convulsões','Nenhuma alteração clínica relevante','Aumento exclusivo da salivação sem outros efeitos'], a:1, e:'A injeção intravascular inadvertida pode levar a níveis plasmáticos elevados rapidamente, causando sinais de toxicidade sistêmica no sistema nervoso central e cardiovascular, exigindo sempre aspiração prévia à injeção.'},
+{c:'anestesio', q:'A parestesia pós-bloqueio do nervo alveolar inferior pode estar relacionada, entre outras causas, a:', o:['Trauma mecânico direto da agulha sobre o nervo ou hematoma local comprimindo a estrutura nervosa','Uso exclusivo de anestésico sem vasoconstritor','Realização da técnica de infiltração maxilar','Ausência completa de qualquer fator de risco identificável'], a:0, e:'Trauma direto da agulha ao nervo, além de possível neurotoxicidade de certos anestésicos e hematomas compressivos locais, são fatores associados à parestesia pós-bloqueio do alveolar inferior.'},
+{c:'anestesio', q:'O trismo que surge após uma técnica anestésica mandibular malsucedida, com formação de hematoma, é frequentemente associado à lesão de vasos próximos ao músculo:', o:['Pterigóideo medial','Bucinador','Orbicular da boca','Zigomático maior'], a:0, e:'O sangramento no espaço pterigomandibular, próximo ao músculo pterigóideo medial, pode gerar hematoma e reação inflamatória local, contribuindo para o trismo pós-anestésico.'},
+{c:'anestesio', q:'A anestesia geral em odontologia é particularmente indicada em situações como:', o:['Exodontia simples de um único dente em paciente colaborativo','Pacientes com necessidades especiais não colaborativos ou cirurgias extensas/complexas que inviabilizam anestesia local isolada','Restaurações simples de rotina','Profilaxia dentária de rotina'], a:1, e:'A anestesia geral é reservada para situações específicas, como pacientes não colaborativos (por exemplo, certas necessidades especiais), fobia extrema não controlada por outros métodos, ou cirurgias mais extensas e complexas.'},
+{c:'anestesio', q:'Em pacientes com hipertireoidismo não controlado, o uso de vasoconstritores adrenérgicos em altas concentrações deve ser feito com cautela, principalmente pelo risco de:', o:['Hipoglicemia grave','Potencialização de efeitos cardiovasculares, como taquicardia e arritmias','Redução da pressão arterial a níveis perigosamente baixos','Nenhuma preocupação relevante'], a:1, e:'Pacientes com hipertireoidismo não controlado já apresentam hiperatividade adrenérgica basal, e o uso de vasoconstritores em excesso pode potencializar efeitos cardiovasculares indesejados, como taquiarritmias.'},
+{c:'anestesio', q:'A ausência de sintomas subjetivos de dormência labial, mesmo após tempo adequado, em uma tentativa de bloqueio do nervo alveolar inferior, geralmente indica:', o:['Sucesso completo da técnica anestésica','Provável falha técnica na deposição do anestésico próximo ao nervo alvo','Necessidade obrigatória de anestesia geral imediata','Alergia sistêmica ao anestésico'], a:1, e:'A ausência de sinais subjetivos esperados (dormência de lábio inferior, por exemplo) após tempo suficiente sugere que o anestésico não foi depositado corretamente próximo ao nervo alvo, indicando possível falha técnica.'},
+{c:'anestesio', q:'A mepivacaína a 3% sem vasoconstritor é uma opção anestésica frequentemente considerada em:', o:['Pacientes cardiopatas com contraindicação relativa ao uso de vasoconstritores adrenérgicos','Todos os pacientes de rotina, independentemente da condição sistêmica','Exclusivamente crianças saudáveis','Casos de necessidade de anestesia extremamente prolongada'], a:0, e:'Por não conter vasoconstritor adrenérgico, a mepivacaína 3% é frequentemente considerada em pacientes com contraindicações relativas ao uso de epinefrina, como certas cardiopatias descompensadas, embora tenha duração de ação mais curta.'},
+{c:'anestesio', q:'A síncope vasovagal durante um procedimento odontológico sob anestesia local é geralmente manejada inicialmente com:', o:['Posicionamento do paciente em posição supina com elevação dos membros inferiores e monitorização dos sinais vitais','Administração imediata de adrenalina intramuscular em qualquer caso','Aumento imediato da dose anestésica local','Início imediato de compressões torácicas sem avaliação prévia'], a:0, e:'A síncope vasovagal, geralmente desencadeada por ansiedade/dor, costuma responder bem ao posicionamento supino com elevação de membros inferiores, além de monitorização e reasseguramento, sem necessidade rotineira de medidas mais invasivas.'},
+{c:'anestesio', q:'Sinais precoces de overdose (toxicidade sistêmica) por anestésico local no sistema nervoso central podem incluir:', o:['Sonolência profunda imediata sem qualquer outro sintoma','Formigamento perioral, tontura, zumbido e agitação, podendo evoluir para convulsões em casos mais graves','Melhora do humor e da concentração','Ausência completa de qualquer sintoma até a parada cardíaca'], a:1, e:'Os sinais iniciais de toxicidade no SNC costumam incluir sintomas como formigamento perioral, tontura, zumbido e agitação, podendo progredir para convulsões e, em casos graves, depressão do SNC e do sistema cardiovascular.'},
+{c:'anestesio', q:'A técnica anestésica intraligamentar (intraligamentar/intracribral) é frequentemente utilizada como:', o:['Técnica anestésica principal e exclusiva para toda cirurgia bucomaxilofacial extensa','Técnica complementar/suplementar quando outras técnicas não proporcionam anestesia pulpar adequada em um dente isolado','Substituta obrigatória do bloqueio troncular em qualquer situação','Técnica exclusiva para anestesia de tecidos moles do palato'], a:1, e:'A técnica intraligamentar costuma ser utilizada como reforço/complemento em situações de anestesia pulpar insuficiente em um dente específico, e não como técnica principal isolada para grandes procedimentos.'},
+{c:'anestesio', q:'O flumazenil é um antagonista farmacológico utilizado principalmente para reverter os efeitos de:', o:['Anestésicos locais amida','Benzodiazepínicos utilizados em sedação','Opioides','Anti-inflamatórios não esteroidais'], a:1, e:'O flumazenil é um antagonista competitivo dos receptores benzodiazepínicos, utilizado para reverter a sedação excessiva causada por benzodiazepínicos, como o midazolam.'},
+
+// ---------- ANATOMIA APLICADA (20) ----------
+{c:'anatomia', q:'O forame mandibular, ponto de referência anatômico para o bloqueio do nervo alveolar inferior, está localizado:', o:['Na face vestibular do ramo mandibular','Na face medial (lingual) do ramo mandibular, próximo à língula','Na borda anterior do processo coronoide','No corpo mandibular, próximo ao forame mentual'], a:1, e:'O forame mandibular situa-se na face medial do ramo da mandíbula, protegido parcialmente pela língula mandibular, sendo o ponto de entrada do feixe vasculonervoso alveolar inferior no canal mandibular.'},
+{c:'anatomia', q:'Durante a exodontia de terceiros molares inferiores, o nervo lingual está tipicamente localizado:', o:['Distante da cortical lingual, sem risco relevante','Próximo à cortical lingual, podendo até estar em contato direto com o periósteo em alguns indivíduos','Exclusivamente dentro do canal mandibular junto ao alveolar inferior','Na face vestibular do ramo mandibular'], a:1, e:'O nervo lingual apresenta trajeto variável, mas frequentemente próximo (por vezes em contato) com a cortical lingual na região de terceiros molares inferiores, o que justifica cuidado especial durante retalhos e osteotomias linguais.'},
+{c:'anatomia', q:'Os principais músculos da masticação incluem:', o:['Masseter, temporal, pterigóideo medial e pterigóideo lateral','Bucinador, orbicular da boca e zigomático maior','Digástrico, milo-hióideo e gênio-hióideo apenas','Esternocleidomastóideo e trapézio'], a:0, e:'Os quatro músculos classicamente descritos como músculos da masticação são masseter, temporal, pterigóideo medial e pterigóideo lateral, todos inervados pelo ramo mandibular do trigêmeo.'},
+{c:'anatomia', q:'O espaço pterigomandibular, relevante na técnica anestésica do bloqueio do alveolar inferior, está delimitado, entre outras estruturas, pelo:', o:['Músculo pterigóideo medial e ramo mandibular','Músculo masseter e osso zigomático','Músculo orbicular dos olhos e osso frontal','Músculo digástrico e osso hióide'], a:0, e:'O espaço pterigomandibular é delimitado medialmente pelo músculo pterigóideo medial e lateralmente pela face medial do ramo mandibular, sendo a região onde se deposita o anestésico no bloqueio do nervo alveolar inferior.'},
+{c:'anatomia', q:'A artéria maxilar, principal fonte de suprimento sanguíneo para estruturas orofaciais profundas, é um ramo terminal da artéria:', o:['Carótida interna','Carótida externa','Subclávia','Vertebral'], a:1, e:'A artéria maxilar é um dos dois ramos terminais da artéria carótida externa (o outro sendo a artéria temporal superficial), suprindo importantes estruturas da face profunda, fossa infratemporal e maxilares.'},
+{c:'anatomia', q:'O nervo facial (VII par craniano), ao emergir do forame estilomastóideo e atravessar a glândula parótida, divide-se classicamente nos seguintes ramos principais:', o:['Temporal, zigomático, bucal, mandibular marginal e cervical','Oftálmico, maxilar e mandibular','Olfatório, óptico e vestibulococlear','Glossofaríngeo, vago e acessório'], a:0, e:'Dentro da glândula parótida, o nervo facial se divide classicamente em cinco ramos terminais: temporal, zigomático, bucal, mandibular marginal e cervical, cada um responsável pela motricidade de grupos musculares específicos da face.'},
+{c:'anatomia', q:'A fossa infratemporal contém, entre outras estruturas importantes:', o:['O globo ocular e o nervo óptico','Parte do músculo pterigóideo lateral, plexo venoso pterigóideo e ramos da artéria maxilar','A glândula tireoide','O seio frontal'], a:1, e:'A fossa infratemporal é uma região anatômica complexa que abriga estruturas como parte dos músculos pterigóideos, o plexo venoso pterigóideo, ramos da artéria maxilar e ramos do nervo mandibular.'},
+{c:'anatomia', q:'A proximidade anatômica entre o seio maxilar e as raízes dos molares (e por vezes pré-molares) superiores é clinicamente relevante porque pode favorecer:', o:['Fraturas mandibulares espontâneas','Comunicações buco-sinusais durante exodontias e sinusites de origem odontogênica','Paralisia facial permanente','Anquilose da ATM'], a:1, e:'A relação íntima entre ápices radiculares de molares/pré-molares superiores e o assoalho do seio maxilar explica o risco de comunicação buco-sinusal em exodontias e a possibilidade de sinusite maxilar de origem odontogênica.'},
+{c:'anatomia', q:'O forame infraorbitário, ponto de saída do nervo infraorbitário (ramo do nervo maxilar), está localizado:', o:['Na borda inferior da órbita, permitindo bloqueio anestésico dessa região','No ângulo da mandíbula','Na região do processo coronoide','No assoalho da órbita, próximo ao ápice orbitário posterior'], a:0, e:'O forame infraorbitário situa-se logo abaixo da borda inferior da órbita e é utilizado como referência para o bloqueio anestésico do nervo infraorbitário, responsável pela sensibilidade de parte da face média.'},
+{c:'anatomia', q:'Os principais componentes anatômicos da articulação temporomandibular incluem:', o:['Côndilo mandibular, fossa mandibular do osso temporal e disco articular interposto','Apenas o côndilo mandibular isoladamente','Processo coronoide e arco zigomático','Sínfise mandibular e forame mentual'], a:0, e:'A ATM é formada essencialmente pelo côndilo mandibular, pela fossa mandibular (glenóide) do osso temporal e pelo disco articular fibrocartilaginoso interposto entre essas duas superfícies.'},
+{c:'anatomia', q:'O feixe superior do músculo pterigóideo lateral tem uma inserção anatomicamente relevante:', o:['No processo coronoide da mandíbula','No disco articular e na cápsula da ATM','No ângulo mandibular','No osso hióide'], a:1, e:'O feixe superior do pterigóideo lateral insere-se, em parte, no disco articular e na cápsula da ATM, o que explica sua participação na dinâmica do disco durante os movimentos mandibulares.'},
+{c:'anatomia', q:'O nervo bucal (ramo do nervo mandibular) é responsável principalmente pela inervação sensitiva de:', o:['Mucosa e pele da região bucal/vestibular posterior, sem inervar dentes','Todos os dentes inferiores','O músculo bucinador motoramente','A língua em sua porção posterior'], a:0, e:'O nervo bucal é puramente sensitivo (não deve ser confundido com o ramo bucal do nervo facial, que é motor), inervando a mucosa e pele da região vestibular/bucal posterior, sendo frequentemente bloqueado como complemento na anestesia de molares inferiores.'},
+{c:'anatomia', q:'O espaço submandibular, importante na disseminação de infecções odontogênicas graves (como a angina de Ludwig), contém principalmente:', o:['A glândula parótida','A glândula submandibular, linfonodos e parte do músculo milo-hióideo','O globo ocular','O seio maxilar'], a:1, e:'O espaço submandibular abriga a glândula submandibular, linfonodos regionais e relaciona-se com o músculo milo-hióideo, sendo uma via importante de disseminação de infecções odontogênicas graves de origem em molares inferiores.'},
+{c:'anatomia', q:'O plexo venoso pterigóideo, localizado na fossa infratemporal, é clinicamente relevante em anestesia odontológica principalmente pelo risco de:', o:['Lesão do globo ocular durante a punção','Formação de hematoma por punção vascular acidental durante técnicas anestésicas mandibulares profundas','Paralisia facial permanente imediata','Perfuração do seio maxilar'], a:1, e:'A rica rede venosa do plexo pterigóideo aumenta o risco de sangramento/hematoma quando há punção vascular acidental durante técnicas anestésicas mais profundas na região, como Gow-Gates ou bloqueios do alveolar inferior mal direcionados.'},
+{c:'anatomia', q:'O ramo mandibular marginal do nervo facial está particularmente em risco durante abordagens cirúrgicas extraorais na região de:', o:['Ângulo e borda inferior da mandíbula','Região frontal do crânio','Ápice do nariz','Região occipital'], a:0, e:'O ramo mandibular marginal do facial tem trajeto relativamente superficial próximo à borda inferior da mandíbula, sendo particularmente vulnerável em acessos cirúrgicos extraorais nessa região, podendo causar paresia da comissura labial se lesado.'},
+{c:'anatomia', q:'O forame mentual, ponto de saída do nervo mentual, está tipicamente localizado, na maioria dos adultos, na região:', o:['Entre os incisivos centrais inferiores','Próximo aos ápices dos pré-molares inferiores','No ângulo da mandíbula','No processo coronoide'], a:1, e:'O forame mentual localiza-se classicamente na região dos pré-molares inferiores, sendo importante referência para técnicas anestésicas de nervo mentual/incisivo e para cirurgias nessa área.'},
+{c:'anatomia', q:'Os ramos terminais do nervo alveolar inferior, dentro do canal mandibular, incluem o nervo:', o:['Incisivo e mentual','Lingual e bucal','Infraorbitário e nasopalatino','Facial e auriculotemporal'], a:0, e:'Ao nível do forame mentual, o nervo alveolar inferior se divide em seus ramos terminais: o nervo mentual (que emerge pelo forame) e o nervo incisivo (que segue inervando os dentes anteriores dentro do osso).'},
+{c:'anatomia', q:'A disseminação de uma infecção odontogênica para o espaço bucal (bucinador), em vez de permanecer restrita ao vestíbulo, está relacionada principalmente à posição do ápice dentário em relação à inserção do músculo:', o:['Bucinador','Temporal','Pterigóideo lateral','Digástrico'], a:0, e:'Quando o ápice do dente envolvido está localizado além (superior ou inferiormente) da inserção do músculo bucinador, a infecção tende a se disseminar para o espaço bucal em vez de drenar para o vestíbulo oral.'},
+{c:'anatomia', q:'O ligamento esfenomandibular, uma das estruturas de sustentação acessória da ATM, estende-se classicamente entre:', o:['A espinha do osso esfenoide e a língula mandibular','O processo estiloide e o ângulo da mandíbula','O osso zigomático e o côndilo mandibular','O osso hióide e o mento'], a:0, e:'O ligamento esfenomandibular liga a espinha do esfenoide à língula mandibular, sendo uma estrutura de sustentação acessória relacionada à dinâmica da ATM, distinta da cápsula articular propriamente dita.'},
+{c:'anatomia', q:'O principal suprimento sanguíneo arterial do corpo da mandíbula é proveniente da artéria:', o:['Facial exclusivamente','Alveolar inferior, ramo da artéria maxilar','Temporal superficial','Oftálmica'], a:1, e:'A artéria alveolar inferior, ramo da artéria maxilar, percorre o canal mandibular junto ao nervo homônimo, sendo a principal fonte de suprimento sanguíneo intraósseo do corpo mandibular.'},
+];
+
+QUESTIONS.forEach((q,i)=>{ q.id = i; });
+
+/* =========================================================
+   ESTADO E LÓGICA
+   ========================================================= */
+const BLOCK_SIZE = 10;
+const STORAGE_KEY = 'quizbmf-stats-v2';
+
+let selectedCats = new Set(CATEGORIES.map(c=>c.key));
+let sessionPool = [];         // fila de perguntas embaralhadas para a sessão atual
+let currentBlockQs = [];      // as 10 perguntas do bloco atual
+let currentIndex = 0;
+let blockScore = 0;
+let blockReview = [];
+let sessionAnswered = 0;
+let sessionCorrect = 0;
+let sessionBlocks = 0;
+let answeredThisQ = false;
+let isReviewMode = false;
+
+function defaultStats(){
+  const byCat = {};
+  CATEGORIES.forEach(c=> byCat[c.key] = {answered:0, correct:0});
+  return {overall:{answered:0, correct:0}, byCat, wrongIds:[]};
+}
+
+async function loadStats(){
+  const base = defaultStats();
+  if(!currentUser) return base;
+  const localKey = STORAGE_KEY + '-' + currentUser.uid;
+  try{
+    const snap = await getDoc(doc(db, 'users_stats', currentUser.uid));
+    if(snap.exists()){
+      const parsed = snap.data();
+      base.overall = parsed.overall || base.overall;
+      base.byCat = Object.assign(base.byCat, parsed.byCat || {});
+      base.wrongIds = parsed.wrongIds || [];
+      localStorage.setItem(localKey, JSON.stringify(base));
+      return base;
+    }
+  }catch(e){ /* offline: cai no cache local abaixo */ }
+  try{
+    const raw = localStorage.getItem(localKey);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      base.overall = parsed.overall || base.overall;
+      base.byCat = Object.assign(base.byCat, parsed.byCat || {});
+      base.wrongIds = parsed.wrongIds || [];
+    }
+  }catch(e){}
+  return base;
+}
+async function saveStats(stats){
+  if(!currentUser) return;
+  const localKey = STORAGE_KEY + '-' + currentUser.uid;
+  try{ localStorage.setItem(localKey, JSON.stringify(stats)); }catch(e){}
+  try{ await setDoc(doc(db, 'users_stats', currentUser.uid), stats); }catch(e){ /* offline: fica na fila do Firestore (persistência ativada) */ }
+}
+
+function countByCat(catKey){ return QUESTIONS.filter(q=>q.c===catKey).length; }
+function catName(key){ const c = CATEGORIES.find(c=>c.key===key); return c ? c.name : key; }
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ---------- HOME ---------- */
+let statsCache = null;
+
+function renderCatGrid(){
+  const grid = document.getElementById('cat-grid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const el = document.createElement('div');
+    el.className = 'cat-card' + (selectedCats.has(cat.key) ? ' selected' : '');
+    const cs = statsCache ? statsCache.byCat[cat.key] : null;
+    const acc = (cs && cs.answered>0) ? Math.round((cs.correct/cs.answered)*100)+'%' : null;
+    el.innerHTML = `<div><div class="cat-name">${cat.name}</div><div class="cat-count">${countByCat(cat.key)} questões</div></div>
+      <div class="cat-right">${acc ? `<span class="cat-acc">${acc}</span>` : ''}<div class="check"></div></div>`;
+    el.addEventListener('click', ()=>{
+      if(selectedCats.has(cat.key)){
+        if(selectedCats.size > 1) selectedCats.delete(cat.key);
+      } else {
+        selectedCats.add(cat.key);
+      }
+      renderCatGrid();
+      updateStartButton();
+    });
+    grid.appendChild(el);
+  });
+}
+
+function availableCount(){
+  return QUESTIONS.filter(q=>selectedCats.has(q.c)).length;
+}
+
+function updateStartButton(){
+  const btn = document.getElementById('btn-start');
+  const avail = availableCount();
+  btn.disabled = avail === 0;
+  btn.textContent = avail === 0 ? 'Selecione ao menos um tema' : 'Iniciar bloco de 10';
+}
+
+function renderWeakCard(){
+  const card = document.getElementById('weak-card');
+  const MIN_ANSWERED = 5;
+  let weakest = null;
+  CATEGORIES.forEach(cat=>{
+    const cs = statsCache.byCat[cat.key];
+    if(cs && cs.answered >= MIN_ANSWERED){
+      const acc = cs.correct/cs.answered;
+      if(!weakest || acc < weakest.acc) weakest = {key:cat.key, acc, cs};
+    }
+  });
+  if(weakest){
+    card.classList.add('show');
+    document.getElementById('weak-title').textContent = catName(weakest.key);
+    document.getElementById('weak-sub').textContent = `${Math.round(weakest.acc*100)}% de acerto em ${weakest.cs.answered} questões respondidas`;
+  } else {
+    card.classList.remove('show');
+  }
+}
+
+function renderReviewBanner(){
+  const banner = document.getElementById('review-banner');
+  const n = statsCache.wrongIds.length;
+  if(n > 0){
+    banner.classList.add('show');
+    document.getElementById('review-count').textContent = n;
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+async function renderHome(){
+  statsCache = await loadStats();
+  document.getElementById('stat-answered').textContent = statsCache.overall.answered || 0;
+  document.getElementById('stat-accuracy').textContent = statsCache.overall.answered ? Math.round((statsCache.overall.correct/statsCache.overall.answered)*100) + '%' : '—';
+  renderCatGrid();
+  renderWeakCard();
+  renderReviewBanner();
+  updateStartButton();
+}
+
+/* ---------- QUIZ FLOW ---------- */
+function refillSessionPool(){
+  const pool = isReviewMode
+    ? QUESTIONS.filter(q => statsCache.wrongIds.includes(q.id))
+    : QUESTIONS.filter(q => selectedCats.has(q.c));
+  sessionPool = shuffle(pool);
+}
+
+function startSession(reviewMode){
+  isReviewMode = !!reviewMode;
+  sessionAnswered = 0;
+  sessionCorrect = 0;
+  sessionBlocks = 0;
+  refillSessionPool();
+  startNextBlock();
+}
+
+function startNextBlock(){
+  if(sessionPool.length < BLOCK_SIZE && !isReviewMode){
+    refillSessionPool();
+  }
+  currentBlockQs = sessionPool.splice(0, Math.min(BLOCK_SIZE, sessionPool.length));
+  currentIndex = 0;
+  blockScore = 0;
+  blockReview = [];
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderFilmstrip(){
+  const fs = document.getElementById('filmstrip');
+  fs.innerHTML = '';
+  currentBlockQs.forEach((_, i)=>{
+    const f = document.createElement('div');
+    f.className = 'frame' + (i < currentIndex ? ' done' : (i === currentIndex ? ' current' : ''));
+    fs.appendChild(f);
+  });
+}
+
+function renderQuestion(){
+  answeredThisQ = false;
+  const q = currentBlockQs[currentIndex];
+  renderFilmstrip();
+  document.getElementById('q-cat').textContent = catName(q.c);
+  document.getElementById('q-index').textContent = `${currentIndex+1}/${currentBlockQs.length}`;
+  document.getElementById('q-text').textContent = q.q;
+  const optsEl = document.getElementById('q-options');
+  optsEl.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.o.forEach((opt, idx)=>{
+    const el = document.createElement('div');
+    el.className = 'opt';
+    el.innerHTML = `<div class="letter">${letters[idx]}</div><div>${opt}</div>`;
+    el.addEventListener('click', ()=> selectAnswer(idx));
+    optsEl.appendChild(el);
+  });
+  document.getElementById('q-explain').classList.remove('show');
+  document.getElementById('q-explain').innerHTML = '';
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.disabled = true;
+  nextBtn.textContent = 'Responda para continuar';
+}
+
+async function selectAnswer(idx){
+  if(answeredThisQ) return;
+  answeredThisQ = true;
+  const q = currentBlockQs[currentIndex];
+  const opts = document.querySelectorAll('#q-options .opt');
+  opts.forEach((el,i)=>{
+    el.classList.add('disabled');
+    if(i === q.a) el.classList.add('correct');
+    if(i === idx && idx !== q.a) el.classList.add('wrong');
+  });
+  const isCorrect = idx === q.a;
+  if(isCorrect) blockScore++;
+  blockReview.push({q: q.q, correct: isCorrect, correctText: q.o[q.a], explanation: q.e});
+
+  const expEl = document.getElementById('q-explain');
+  expEl.innerHTML = `<b>${isCorrect ? 'Correto. ' : 'Não é essa. '}</b>${q.e}`;
+  expEl.classList.add('show');
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.disabled = false;
+  nextBtn.textContent = currentIndex === currentBlockQs.length - 1 ? 'Ver resultado do bloco' : 'Próxima pergunta';
+
+  sessionAnswered++;
+  if(isCorrect) sessionCorrect++;
+
+  statsCache.overall.answered++;
+  if(isCorrect) statsCache.overall.correct++;
+  if(!statsCache.byCat[q.c]) statsCache.byCat[q.c] = {answered:0, correct:0};
+  statsCache.byCat[q.c].answered++;
+  if(isCorrect) statsCache.byCat[q.c].correct++;
+
+  const wIdx = statsCache.wrongIds.indexOf(q.id);
+  if(isCorrect){
+    if(wIdx > -1) statsCache.wrongIds.splice(wIdx,1);
+  } else {
+    if(wIdx === -1) statsCache.wrongIds.push(q.id);
+  }
+  await saveStats(statsCache);
+}
+
+function nextQuestion(){
+  if(!answeredThisQ) return;
+  if(currentIndex < currentBlockQs.length - 1){
+    currentIndex++;
+    renderQuestion();
+  } else {
+    sessionBlocks++;
+    showCheckpoint();
+  }
+}
+
+function showCheckpoint(){
+  showScreen('screen-checkpoint');
+  document.getElementById('cp-score').textContent = `${blockScore}/${currentBlockQs.length}`;
+  const pct = Math.round((blockScore/currentBlockQs.length)*100);
+  document.getElementById('cp-pct').textContent = `${pct}% de acerto`;
+  let msg = '';
+  if(pct >= 90) msg = 'Domínio excelente neste bloco.';
+  else if(pct >= 70) msg = 'Bom desempenho — vale revisar os pontos que errou.';
+  else if(pct >= 50) msg = 'Base razoável, mas ainda há lacunas para reforçar.';
+  else msg = 'Vale revisar este conteúdo com calma.';
+  document.getElementById('cp-msg').textContent = msg;
+
+  const reviewEl = document.getElementById('cp-review');
+  reviewEl.innerHTML = '';
+  blockReview.forEach(r=>{
+    const el = document.createElement('div');
+    el.className = 'review-item ' + (r.correct ? 'correct' : 'wrong');
+    el.innerHTML = `<div class="rq">${r.q}</div><div class="ra">${r.correct ? 'Você acertou.' : 'Resposta correta: ' + r.correctText}</div>`;
+    reviewEl.appendChild(el);
+  });
+
+  const nextBlockBtn = document.getElementById('btn-next-block');
+  const enoughForAnotherBlock = isReviewMode ? (sessionPool.length > 0) : true;
+  nextBlockBtn.style.display = enoughForAnotherBlock ? 'block' : 'none';
+}
+
+function showSummary(){
+  showScreen('screen-summary');
+  document.getElementById('sum-score').textContent = `${sessionCorrect}/${sessionAnswered}`;
+  const pct = sessionAnswered ? Math.round((sessionCorrect/sessionAnswered)*100) : 0;
+  document.getElementById('sum-pct').textContent = `${pct}% de acerto`;
+  document.getElementById('sum-blocks').textContent = sessionBlocks;
+
+  const bd = document.getElementById('sum-breakdown');
+  bd.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const cs = statsCache.byCat[cat.key] || {answered:0, correct:0};
+    const p = cs.answered ? Math.round((cs.correct/cs.answered)*100) : 0;
+    const row = document.createElement('div');
+    row.className = 'bd-row';
+    row.innerHTML = `<div class="bd-name">${cat.name}</div><div class="bd-bar"><div class="bd-fill" style="width:${p}%;"></div></div><div class="bd-pct">${cs.answered ? p+'%' : '—'}</div>`;
+    bd.appendChild(row);
+  });
+}
+
+/* INIT */
+document.getElementById('bank-count-pill').textContent = `${QUESTIONS.length} questões`;
+
+document.getElementById('btn-start').addEventListener('click', ()=> startSession(false));
+document.getElementById('btn-review').addEventListener('click', ()=> startSession(true));
+document.getElementById('btn-next').addEventListener('click', nextQuestion);
+document.getElementById('btn-quit').addEventListener('click', ()=> { showScreen('screen-home'); renderHome(); });
+document.getElementById('btn-next-block').addEventListener('click', startNextBlock);
+document.getElementById('btn-end-session').addEventListener('click', ()=>{ showSummary(); });
+document.getElementById('btn-summary-home').addEventListener('click', ()=> { showScreen('screen-home'); renderHome(); });
+
+document.getElementById('login-form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('btn-login');
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+  try{
+    await signInWithEmailAndPassword(auth, email, password);
+  }catch(err){
+    errEl.textContent = 'E-mail ou senha inválidos, ou essa conta ainda não foi criada.';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Entrar';
+});
+
+document.getElementById('btn-logout').addEventListener('click', ()=> signOut(auth));
+
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    currentUser = user;
+    document.getElementById('btn-logout').style.display = 'inline';
+    document.getElementById('login-error').textContent = '';
+    document.getElementById('login-form').reset();
+    showScreen('screen-home');
+    await renderHome();
+  } else {
+    currentUser = null;
+    document.getElementById('btn-logout').style.display = 'none';
+    showScreen('screen-login');
+  }
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
